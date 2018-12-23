@@ -1,0 +1,65 @@
+<html>
+    <head>
+<script type="JavaScript">
+    const url = 'ws://192.168.1.32:1337/';
+    const connection = new WebSocket(url);
+
+    connection.onopen( () => {
+        connection.send('Kevin');
+    });
+    connection.onmessage = e => {
+          console.log(e.data)
+    }
+</script>
+    </head>
+    <body>
+        <p>Opened connection</p>
+    </body>
+</html>
+
+
+<html>
+<head>
+
+    <script type = "text/javascript">
+
+        var ws = new WebSocket("ws://192.168.1.32:1337/echo");
+        ws.onopen = function() {
+            ws.send("HELLO");
+        };
+        ws.onmessage = function(event) {
+            let message = event.data;
+            console.log("onmessage(event) got", message);
+        };
+        ws.onclose = function() { 
+
+            // WebSocket has been closed.
+            console.log("Connection was closed..."); 
+        };
+
+        function joinNewGame() {
+
+            ws.send("JOIN_GAME 0x12345678");
+        }
+
+    </script>
+            
+</head>
+            
+<body>
+    <div id = "sse">
+    <a href = "javascript:joinNewGame()">Start Game</a>
+    </div>
+
+    <div>
+        <h4>Colour Selector</h4>
+        <div id="player-colour-chooser">
+            <div id="player-red">Red</div>
+            <div id="player-green">Green</div>
+            <div id="player-blue">Blue</div>
+            <div id="player-yellow">Yellow</div>
+        </div>
+    </div>
+</body>
+</html>
+
