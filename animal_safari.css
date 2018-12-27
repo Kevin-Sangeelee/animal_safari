@@ -39,3 +39,23 @@
     padding: 20px;
     font-size: 150%;
 }
+
+#board {
+    display: grid;
+    grid-template-rows: 30px 30px 30px 30px 30px 30px 30px 30px 30px;
+    grid-template-columns: 40px 40px 40px 40px 40px 40px 40px;
+    grid-gap: 5px;
+}
+
+#board div {
+    color: black;
+    background-color: beige;
+    border-radius: 10px;
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 100%;
+}
+
+#board div:nth-child(7n) {
+    background-color: green;
+}
