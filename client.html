@@ -1,25 +1,7 @@
 <html>
-    <head>
-<script type="JavaScript">
-    const url = 'ws://192.168.1.32:1337/';
-    const connection = new WebSocket(url);
-
-    connection.onopen( () => {
-        connection.send('Kevin');
-    });
-    connection.onmessage = e => {
-          console.log(e.data)
-    }
-</script>
-    </head>
-    <body>
-        <p>Opened connection</p>
-    </body>
-</html>
-
-
-<html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="animal_safari.css"/>
 
     <script type = "text/javascript">
 
@@ -29,7 +11,44 @@
         };
         ws.onmessage = function(event) {
             let message = event.data;
-            console.log("onmessage(event) got", message);
+            let obj = JSON.parse(message);
+            console.log('ws.onmessage event: JSON', obj);
+
+            if(obj.type == "CHOOSE_PLAYER") {
+
+                obj.payload.forEach( (p, idx) => {
+                    if(p.id !== false) {
+                        const selector = '#player-choice-' + p.id;
+                        let element = document.querySelector(selector);
+                        element.removeEventListener('click', choose_colour);
+                        console.log("Element is currently allocated.", element);
+                    }
+                });
+            }
+            if(obj.type == "PLAYER_CONFIRMED") {
+
+                let p = obj.payload;
+
+                const selector = '#player-choice-' + p.id;
+                let element = document.querySelector(selector);
+
+                element.style.border = '5px solid black';
+                console.log("My element is", element);
+
+                document.querySelectorAll('#player-colour-chooser > div').forEach(
+                    e => e.removeEventListener('click', choose_colour)
+                );
+            }
+            if(obj.type == "SHOW_DICE") {
+
+                const dice = obj.payload;
+                const die1 = dice.die1 == 6 ? 'B' : dice.die1;
+                const die2 = dice.die2 == 6 ? 'B' : dice.die2;
+
+                document.querySelector('#die1').innerText = die1;
+                document.querySelector('#die2').innerText = die2;
+                document.querySelector('#player-move-options').innerText = 'Move Options: ' + dice.moveOptions;
+            }
         };
         ws.onclose = function() { 
 
@@ -37,9 +56,9 @@
             console.log("Connection was closed..."); 
         };
 
-        function joinNewGame() {
+        function rollDice() {
 
-            ws.send("JOIN_GAME 0x12345678");
+            ws.send("ROLL_DICE");
         }
 
     </script>
@@ -47,19 +66,44 @@
 </head>
             
 <body>
-    <div id = "sse">
-    <a href = "javascript:joinNewGame()">Start Game</a>
+    <div id="player-dice-panel">
+        <div id="player-dice">
+            <div id="die1" class="die"></div>
+            <div id="die2" class="die"></div>
+        </div>
+        <div id="player-move-options">
+        </div>
+        <div id="dice-roll-button">
+            <a href = "javascript:rollDice()">Roll Dice</a>
+        </div>
     </div>
 
     <div>
         <h4>Colour Selector</h4>
         <div id="player-colour-chooser">
-            <div id="player-red">Red</div>
-            <div id="player-green">Green</div>
-            <div id="player-blue">Blue</div>
-            <div id="player-yellow">Yellow</div>
+            <div id="player-choice-red"    class="player-red">Red</div>
+            <div id="player-choice-green"  class="player-green">Green</div>
+            <div id="player-choice-blue"   class="player-blue">Blue</div>
+            <div id="player-choice-yellow" class="player-yellow">Yellow</div>
         </div>
     </div>
 </body>
+
+
+<script type = "text/javascript">
+
+    function choose_colour(event) {
+        console.log(event);
+        const choice = event.target.id;
+        const colour = choice.substr(14);
+        console.log('choose_colour() invoked with', colour);
+        ws.send('CHOOSE: ' + colour);
+    }
+
+    document.querySelectorAll("#player-colour-chooser > div")
+        .forEach( e => e.addEventListener('click', choose_colour) );
+
+</script>
+
 </html>
 

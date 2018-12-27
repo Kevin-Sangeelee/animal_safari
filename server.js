@@ -7,6 +7,65 @@ const path = require('path');
 const http_port = 1338;
 const ws_port = 1337;
 
+const animal_safari = require('./animal_safari.js');
+
+let game = animal_safari.setUpNewGame();
+
+function pushToClient(ws, type, payload) {
+    console.log('pushToClient()', type, payload);
+    ws.send( JSON.stringify(
+        { type, payload }
+    ) );
+}
+
+/*
+ * The WebSocket server starts here
+ */
+const wss = new WebSocket.Server({ port: parseInt(ws_port) });
+
+wss.on('connection', (ws, req) => {
+
+    //console.log('Got connection', req);
+    let myPlayer = false;
+
+    ws.on('message', message => {
+        console.log("GOT MESSAGE:", message);
+
+        if(message == "HELLO") {
+            pushToClient(ws, 'CHOOSE_PLAYER', game.players);
+        }
+
+        if(message == "ROLL_DICE") {
+            pushToClient( ws, 'SHOW_DICE', animal_safari.rollDice() );
+        }
+
+        const match = message.match(/^CHOOSE: (.+)/);
+
+        if(match) {
+            // Get the colour that was chosen.
+            const colour = match[1];
+
+            // If a player has not already been assigned this colour...
+            if( myPlayer == false && game.players.find( p => p.id === colour ) == undefined ) {
+                // then assign it to a player.
+                let player = game.players.find( p => p.id === false );
+                player.id = colour;
+                myPlayer = player;
+                console.log("I choose", myPlayer);
+                pushToClient(ws, 'PLAYER_CONFIRMED', myPlayer);
+            } else {
+                console.log("I attempt to choose", colour, "but I already chose", myPlayer);
+            }
+        }
+
+    });
+});
+
+
+/*
+ * The HTTP server starts here
+ */
+
 // maps file extention to MIME types
 const mimeType = {
   '.ico': 'image/x-icon',
@@ -25,9 +84,6 @@ const mimeType = {
   '.ttf': 'aplication/font-sfnt'
 };
 
-/*
- * The HTTP server starts here
- */
 http.createServer(function (req, res) {
   console.log(`${req.method} ${req.url}`);
   // parse URL
@@ -65,22 +121,3 @@ http.createServer(function (req, res) {
   });
 }).listen(parseInt(http_port));
 console.log(`Server listening on port ${http_port}`);
-
-
-/*
- * The WebSocket server starts here
- */
-const wss = new WebSocket.Server({ port: parseInt(ws_port) })
-
-wss.on('connection', (ws, req) => {
-
-    console.log('Got connection', req);
-
-    ws.send('Welcome');
-
-    ws.on('message', message => {
-        console.log(`Received message => ${message}`)
-        ws.send('I respond to ' + message);
-    });
-})
-

@@ -1,0 +1,41 @@
+#player-colour-chooser {
+    display: grid; 
+    grid-template-columns: 100px 100px 100px 100px;
+    grid-gap: 10px;
+    text-align: center;
+}
+#player-colour-chooser div {
+    color: white;
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 20px;
+    font-size: 140%;
+}
+#player-colour-chooser div.player-red {
+    background-color: red;
+}
+#player-colour-chooser div.player-green {
+    background-color: green;
+}
+#player-colour-chooser div.player-blue {
+    background-color: blue;
+}
+#player-colour-chooser div.player-yellow {
+    background-color: yellow;
+    color: black;
+}
+
+#player-dice {
+    display: grid; 
+    grid-template-rows: 70px;
+    grid-template-columns: 70px 70px;
+    grid-gap: 20px;
+}
+#player-dice div.die {
+    color: white;
+    background-color: green;
+    border-radius: 10px;
+    border: 2px solid black;
+    padding: 20px;
+    font-size: 150%;
+}
