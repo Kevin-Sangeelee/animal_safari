@@ -14,7 +14,7 @@
             let obj = JSON.parse(message);
             console.log('ws.onmessage event: JSON', obj);
 
-            if(obj.type == "CHOOSE_PLAYER") {
+            if(obj.type == "CHOOSE_PLAYER") { // payload is array of Player objects.
 
                 obj.payload.forEach( (p, idx) => {
                     if(p.id !== false) {
@@ -25,7 +25,7 @@
                     }
                 });
             }
-            if(obj.type == "PLAYER_CONFIRMED") {
+            if(obj.type == "PLAYER_CONFIRMED") { // payload is a Player object.
 
                 let p = obj.payload;
 
@@ -39,7 +39,7 @@
                     e => e.removeEventListener('click', choose_colour)
                 );
             }
-            if(obj.type == "SHOW_DICE") {
+            if(obj.type == "SHOW_DICE") { // payload is Dice object.
 
                 const dice = obj.payload;
                 const die1 = dice.die1 == 6 ? 'B' : dice.die1;
@@ -66,6 +66,16 @@
 </head>
             
 <body>
+    <div>
+        <h4>Colour Selector for <input id="player-name" type="input" placeholder="Enter your name here"></input></h4>
+        <div id="player-colour-chooser">
+            <div id="player-choice-red"    class="player-red">Red</div>
+            <div id="player-choice-green"  class="player-green">Green</div>
+            <div id="player-choice-blue"   class="player-blue">Blue</div>
+            <div id="player-choice-yellow" class="player-yellow">Yellow</div>
+        </div>
+    </div>
+
     <div id="player-dice-panel">
         <div id="player-dice">
             <div id="die1" class="die"></div>
@@ -75,16 +85,6 @@
         </div>
         <div id="dice-roll-button">
             <a href = "javascript:rollDice()">Roll Dice</a>
-        </div>
-    </div>
-
-    <div>
-        <h4>Colour Selector</h4>
-        <div id="player-colour-chooser">
-            <div id="player-choice-red"    class="player-red">Red</div>
-            <div id="player-choice-green"  class="player-green">Green</div>
-            <div id="player-choice-blue"   class="player-blue">Blue</div>
-            <div id="player-choice-yellow" class="player-yellow">Yellow</div>
         </div>
     </div>
 
@@ -106,11 +106,16 @@
 <script type = "text/javascript">
 
     function choose_colour(event) {
+        const name = document.getElementById('player-name').value;
+        if(name == null || name.length == 0) {
+            document.getElementById('player-name').focus();
+            return;
+        }
         console.log(event);
         const choice = event.target.id;
         const colour = choice.substr(14);
         console.log('choose_colour() invoked with', colour);
-        ws.send('CHOOSE: ' + colour);
+        ws.send('CHOOSE: ' + colour + ' for ' + name);
     }
 
     document.querySelectorAll("#player-colour-chooser > div")

@@ -7,25 +7,35 @@ const path = require('path');
 const http_port = 1338;
 const ws_port = 1337;
 
-const animal_safari = require('./animal_safari.js');
 const protocol = require('./web_protocol.js');
-
-let game = animal_safari.setUpNewGame();
 
 /*
  * The WebSocket server starts here
  */
 const wss = new WebSocket.Server({ port: parseInt(ws_port) });
+let client_id = 1;
 
 wss.on('connection', (ws, req) => {
 
-    //console.log('Got connection', req);
-    let myPlayer = false;
+    // Let's give the socket a unique id to help us tell the
+    // difference between them.
+    ws.id = client_id++;
 
+    protocol.declareConnection(ws);
+
+    console.log('Got connection, assigned it id', ws.id);
+
+    // Declare handler for this connection's message events.
     ws.on('message', message => {
         console.log("GOT MESSAGE:", message);
 
-        protocol.processMessage(message, game, ws, myPlayer, animal_safari);
+        protocol.processMessage(message, ws);
+    });
+
+    // Declare handler for this connection's close event.
+    ws.on('close', e => {
+        console.log('ws.onclose - ', e);
+        protocol.deleteConnection(ws);
     });
 });
 

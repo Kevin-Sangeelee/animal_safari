@@ -2,6 +2,19 @@ module.exports = {
     setUpNewGame,
     rollDice
 }
+
+/**
+ * States:
+ *  Waiting for two or more players.
+ *  Waiting to begin (4 players, timeout, or unanimous decision)
+ *  Waiting for dice-roll (from player n)
+ *  Waiting for move selection (from player n)
+ *  Waiting for take-selection (from player n)
+ *
+ * Actions:
+ *  Send - players status update.
+ */
+
 function card(animal, score, image) {
     return {
         animal: animal,
@@ -110,6 +123,7 @@ function setUpNewGame() {
     }
 
     return {
+        state: 'Waiting for two or more players.',
         players: newPlayers(),
         deck: deck,
         viewpoints: [...Array(8)].map( x => [] ),
