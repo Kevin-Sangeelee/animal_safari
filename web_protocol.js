@@ -76,10 +76,36 @@ function playerColourChosen(message, ws) {
             pushToClient(ws, 'PLAYER_CONFIRMED', player);
             console.log( player.name, " chooses", player);
 
+            pushToClient(ws, 'SHOW_PLAYERS', game.players);
+
+            let playerCount = game.players.reduce( (a, p) => a + (p.id ? 1 : 0), 0);
+            console.log('Can play', playerCount);
+            if(playerCount >= 2) {
+                startCountdown();
+            }
+
         } else {
             console.log("I attempt to choose", colour, "but I already chose", myPlayer);
         }
     }
+}
+
+function startCountdown() {
+    if(game.countdown == undefined) {
+        game.countdown = 15;
+        const intervalObj = setInterval( function countdown() {
+            console.log( game.countdown, 'seconds to start');
+            game.countdown--;
+            if(game.countdown == 0) {
+                clearInterval(intervalObj);
+                console.log('Ready to go!');
+            }
+        }, 1000);
+    } else if(game.countdown >= 5) {
+        console.log('New entrant, resetting countdown');
+        game.countdown = 15;
+    }
+
 }
 
 /**
@@ -95,7 +121,7 @@ function playerColourChosen(message, ws) {
 function processMessage(message, ws) {
 
     console.log(message);
-    console.log(ws);
+    // console.log(ws);
 
     // Got message HELLO
     if(message == "HELLO") {

@@ -4,12 +4,18 @@
     grid-gap: 10px;
     text-align: center;
 }
-#player-colour-chooser div {
+#player-colour-chooser > div {
     color: white;
     border-radius: 5px;
     border: 2px solid black;
-    padding: 20px;
-    font-size: 140%;
+    padding: 10px;
+}
+#player-colour-chooser div.player-name {
+    margin-top: 10px;
+    border-radius: 3px;
+    border: 1px dashed;
+    padding: 1px;
+    font-size: 75%;
 }
 #player-colour-chooser div.player-red {
     background-color: red;
@@ -26,6 +32,7 @@
 }
 
 #player-dice {
+    margin:20px;
     display: grid; 
     grid-template-rows: 70px;
     grid-template-columns: 70px 70px;
@@ -41,6 +48,7 @@
 }
 
 #board {
+    margin: 20px;
     display: grid;
     grid-template-rows: 30px 30px 30px 30px 30px 30px 30px 30px 30px;
     grid-template-columns: 40px 40px 40px 40px 40px 40px 40px;
@@ -58,4 +66,14 @@
 
 #board div:nth-child(7n) {
     background-color: green;
+}
+
+#message-box {
+}
+
+div.container {
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 10px;
 }
